@@ -1,6 +1,6 @@
 # Xsens MVN Robot SDK — Python API Reference
 
-Version: **0.1.2**
+Version: **0.1.3**
 Platform: Linux x86_64 / aarch64
 Python: 3.10, 3.13 (3.8, 3.11, 3.12 supported when interpreter is available)
 
@@ -32,10 +32,10 @@ Install the pre-built wheel for your Python version:
 
 ```bash
 # Python 3.10
-pip install xsens_mvn_robot-0.1.2-cp310-none-linux_x86_64.whl
+pip install xsens_mvn_robot-0.1.3-cp310-none-linux_x86_64.whl
 
 # Python 3.13
-pip install xsens_mvn_robot-0.1.2-cp313-none-linux_x86_64.whl
+pip install xsens_mvn_robot-0.1.3-cp313-none-linux_x86_64.whl
 ```
 
 Verify the installation:
