@@ -1,7 +1,7 @@
 # Xsens MVN Robot SDK — Python API Reference
 
 Version: **0.1.7**
-Platform: Linux x86_64 / aarch64
+Platform: Linux x86_64 / aarch64, Windows x64
 Python: 3.8, 3.10, 3.11, 3.12, 3.13 
 
 ---
@@ -28,21 +28,26 @@ Python: 3.8, 3.10, 3.11, 3.12, 3.13
 
 ## Installation
 
-Install the pre-built wheel for your Python version:
+Install the pre-built wheel that matches your platform and Python version
+(`cp310` = Python 3.10, and so on):
 
 ```bash
-# Python 3.10
+# Linux x86_64, Python 3.10
 pip install xsens_mvn_robot-0.1.7-cp310-none-linux_x86_64.whl
 
-# Python 3.13
-pip install xsens_mvn_robot-0.1.7-cp313-none-linux_x86_64.whl
+# Linux aarch64 (e.g. NVIDIA Jetson), Python 3.10
+pip install xsens_mvn_robot-0.1.7-cp310-none-linux_aarch64.whl
+
+# Windows x64, Python 3.10
+pip install xsens_mvn_robot-0.1.7-cp310-none-win_amd64.whl
 ```
 
 Verify the installation:
 
 ```python
+import xsens_mvn_robot
 from xsens_mvn_robot import XsensWrapper
-print("Import OK")
+print("Import OK, version", xsens_mvn_robot.__version__)
 ```
 
 ---
@@ -124,14 +129,14 @@ Raises `RuntimeError` if the underlying device object cannot be created.
 
 Initialize the device and build the internal body model. **Must be called before any data access.**
 
-Blocks until a quaternion datagram is received from Xsens MVN Studio, up to ~1 second (100 attempts × 10 ms).
+Blocks until a quaternion datagram is received from Xsens MVN Studio. It waits as long as needed and prints a status message every 5 seconds; press Ctrl+C to abort if MVN never starts streaming.
 
 ```python
 if not device.init():
     raise RuntimeError("Failed to connect to Xsens MVN")
 ```
 
-Returns `True` on success, `False` if no data was received in time.
+Returns `True` on success, `False` if initialization failed or was interrupted.
 
 > **Note:** Xsens MVN Studio must be running and streaming to the configured port before calling `init()`.
 
@@ -228,6 +233,18 @@ trackers = device.get_tracker_names()
 
 ### Session & Timing Methods
 
+#### `get_version() -> str` (static)
+
+Returns the SDK version compiled into the loaded library, e.g. `"0.1.7"`. The same value is available as `xsens_mvn_robot.__version__`. Use it to check which build is actually installed in the active environment.
+
+```python
+import xsens_mvn_robot
+print(xsens_mvn_robot.__version__)        # "0.1.7"
+print(XsensWrapper.get_version())         # "0.1.7"
+```
+
+---
+
 #### `get_sample_counter() -> int`
 
 The monotonically increasing frame counter from MVN Studio. Use this to detect new frames.
@@ -262,7 +279,7 @@ frame_ms = int(device.get_frame_time())
 
 #### `get_time_code() -> tuple[int, int, int, int]`
 
-Returns the SMPTE time code of the current frame as `(hour, minute, second, nanosecond)`.
+Returns the time of day at which the current frame was captured as `(hour, minute, second, nanosecond)`.
 
 ```python
 h, m, s, ns = device.get_time_code()
